@@ -81,13 +81,29 @@
     </header>
     
     <main class="content">
-        <div class="iframe-container">
-            <iframe src="https://docs.google.com/spreadsheets/d/e/2PACX-1vRQJjYXrnoSrIn4zjYjStM-sCho7eVVlowR2Nit641C6b6BqdwqxrHIFteGFSQ6BrknDHVGDY-hMshC/pubhtml?widget=true&amp;headers=false"></iframe>
-        </div>
-        
-        <div class="iframe-container">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true"></iframe>
-        </div>
+        <div class="iframe-container" id="sheet-container"></div>
+        <div class="iframe-container" id="form-container"></div>
     </main>
+
+    <script>
+        window.onload = function() {
+            const encodedSheet = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlJRSmpZWFJub1NySW40empZalN0TS1zQ2hvN2VWVmxvd1IyTml0NjQxQzZiNkJxZHdxeHJISUZ0ZUdGU1E2QnJrbkRIVkdEWS1oTXNoQy9wdWJodG1sP3dpZGdldD10cnVlJmFtcDtoZWFkZXJzPWZhbHNl";
+            const encodedForm = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZEQ5d1lBWkFCNEt5SlpnQmh2NVhIaXhUQy13OERfcGM4Q0x0XzAxQklLTUtOcDZ3L3ZpZXdmb3JtP2VtYmVkZGVkPXRydWU=";
+            
+            loadIframe("sheet-container", atob(encodedSheet));
+            loadIframe("form-container", atob(encodedForm));
+        }
+        
+        function loadIframe(containerId, decodedUrl) {
+            const iframe = document.createElement("iframe");
+            iframe.src = decodedUrl;
+            iframe.width = "100%";
+            iframe.height = "824";
+            iframe.frameBorder = "0";
+            iframe.marginHeight = "0";
+            iframe.marginWidth = "0";
+            document.getElementById(containerId).appendChild(iframe);
+        }
+    </script>
 </body>
 </html>
