@@ -81,15 +81,22 @@
     </header>
     
     <main class="content">
-        <div class="iframe-container" id="sheet-container"></div>
-        <div class="iframe-container" id="form-container"></div>
+        <!-- Original iframes with links directly obfuscated in HTML -->
+        <div class="iframe-container">
+            <iframe id="sheet-iframe"></iframe>
+        </div>
+        
+        <div class="iframe-container">
+            <iframe id="form-iframe"></iframe>
+        </div>
     </main>
 
     <script>
         window.onload = function() {
-            const encodedSheet = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvZS8yUEFDWC0xdlJRSmpZWHJub1NySW40empZalN0TS1zQ2hvN2VWVmxvd1IyTml0NjQxQzZiNkJxZHdxeHJISUZ0ZUdGU1E2QnJrbkRIVkdEWS1oTXNoQw==";
+            const encodedSheet = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vc3ByZWFkc2hlZXRzL2QvMXNQbkpQMy01azc2QWVBcDJPczRlNlZVRWFTY3dCdWtGaFd0X1c0d0FmeU0vZWRpdD91c3A9c2hhcmluZw==";
             const encodedForm = "aHR0cHM6Ly9kb2NzLmdvb2dsZS5jb20vZm9ybXMvZC9lLzFGQUlwUUxTZEQ5d1lBWkFCNEt5SlpnQmh2NVhIaXhUQy13OERfcGM4Q0x0XzAxQklLTUtOcDZ3L3ZpZXdmb3JtP2VtYmVkZGVkPXRydWU=";
             
+            // Create and load iframes with decoded links
             loadIframe("sheet-container", atob(encodedSheet));
             loadIframe("form-container", atob(encodedForm));
         }
