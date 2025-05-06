@@ -2,5 +2,8 @@
   "name": "Log minyak",
   "theme_color": "#000000",
   "background_color": "#000000",
-  "short_name": "log"
+  "short_name": "log",
+  "id": "logd",
+  "description": "logging minyak",
+  "start_url": "https://copppppsfd.github.io/websitemanagement/"
 }
