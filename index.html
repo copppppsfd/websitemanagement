@@ -76,11 +76,6 @@
     </style>
 </head>
 <body>
-    <script>
-      if (typeof navigator.serviceWorker !== 'undefined') {
-        navigator.serviceWorker.register('sw.js')
-      }
-    </script>
 
     <header class="header">
         <div class="container">
@@ -114,5 +109,10 @@
             <img src="images/qr.png" width="170" height="170">
         </div>
     </main>
+    <script>
+      if (typeof navigator.serviceWorker !== 'undefined') {
+        navigator.serviceWorker.register('sw.js')
+      }
+    </script>
 </body>
 </html>
