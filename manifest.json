@@ -455,5 +455,9 @@
       "src": "ios/1024.png",
       "sizes": "1024x1024"
     }
-  ]
+  ],
+  "display": "minimal-ui",
+  "orientation": "any",
+  "dir": "auto"
+  
 }
