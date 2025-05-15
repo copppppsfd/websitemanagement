@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,11 +78,7 @@
         iframe {
             border: none;
             width: 100%;
-        }
-        
-        iframe#googleForm {
-            height: 100%;
-            min-height: 800px; /* Minimum height on larger screens */
+            height: 100%; /* Make all iframes fill their containers */
         }
         
         .form-controls {
@@ -188,6 +185,7 @@
         <div class="iframe-container form-iframe">
             <iframe id="googleForm" 
                 src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true"     
+                height="100%" 
                 frameborder="0" 
                 marginheight="0" 
                 marginwidth="0">
@@ -220,7 +218,7 @@
             if (viewportHeight < 700) {
                 formIframe.style.height = '450px';
             } else if (viewportHeight < 900) {
-                formIframe.style.height = '950px';
+                formIframe.style.height = '600px';
             } else {
                 formIframe.style.height = '700px';
             }
