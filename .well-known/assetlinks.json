@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "io.github.copppppsfd.twa",
-        "sha256_cert_fingerprints": ["57:9D:B3:DB:DF:C7:80:87:2E:5E:A4:3D:DA:47:5F:5C:72:8F:70:61:9D:E5:9B:64:F6:5C:8E:FF:AF:F3:63:BB"]
+        "sha256_cert_fingerprints": ["91:04:7F:B5:A0:8B:B3:54:09:54:07:24:B7:4C:DD:39:38:AF:BA:04:21:F8:70:A3:26:D1:30:61:72:59:30:BA"]
       }
-    }]
+}]
