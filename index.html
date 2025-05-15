@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <link rel="manifest" href="manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+      function resizeIframe(obj) {
+        obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+      }
+    </script>
     <title>LOG Minyak</title>
 
   
@@ -104,7 +109,8 @@
         </script>
         
         <div class="iframe-container">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true" width="100%" height="none"></iframe>
+            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true" width="100%" 
+                style="border-style: none; height: 0; overflow: hidden" onload="resizeIframe(this)"></iframe>
             
         </div>
 
