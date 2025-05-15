@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,9 +70,18 @@
             background-color: #fff;
         }
         
+        .iframe-container.form-iframe {
+            height: 100vh; /* Full viewport height */
+        }
+        
         iframe {
             border: none;
             width: 100%;
+        }
+        
+        iframe#googleForm {
+            height: 100%;
+            min-height: 800px; /* Minimum height on larger screens */
         }
         
         .form-controls {
@@ -177,9 +185,9 @@
             </div>
         </div>
 
-        <div class="iframe-container">
-            <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true"     
-                height="970" 
+        <div class="iframe-container form-iframe">
+            <iframe id="googleForm" 
+                src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true"     
                 frameborder="0" 
                 marginheight="0" 
                 marginwidth="0">
@@ -212,7 +220,7 @@
             if (viewportHeight < 700) {
                 formIframe.style.height = '450px';
             } else if (viewportHeight < 900) {
-                formIframe.style.height = '600px';
+                formIframe.style.height = '950px';
             } else {
                 formIframe.style.height = '700px';
             }
