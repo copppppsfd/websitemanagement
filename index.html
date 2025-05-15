@@ -41,11 +41,12 @@
         }
         
         .content {
-            margin: 2rem auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2rem;
+            width: 8.5in;
+            height: 11in;
+            transform-origin: top left; /* important for clean scaling */
+            padding: 0.5in;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
         }
         
         .iframe-container {
@@ -73,6 +74,7 @@
                 max-width: 100%;
             }
         }
+        
     </style>
 </head>
 <body>
