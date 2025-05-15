@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +34,14 @@
             padding: 1.5rem;
             color: #000000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-align: left;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* Aligns content to the left */
+            max-width: 1200px;
+            margin: 0 auto;
         }
         
         .header h1 {
@@ -41,11 +49,10 @@
             font-weight: bold;
             display: flex;
             align-items: center;
-            justify-content: center;
         }
         
         .header img {
-            margin-right: 10px;
+            margin-right: 15px;
         }
         
         .content {
@@ -135,6 +142,10 @@
                 font-size: 1.2rem;
             }
             
+            .header img {
+                margin-right: 10px;
+            }
+            
             .form-controls {
                 flex-direction: column;
                 gap: 10px;
@@ -149,7 +160,7 @@
 </head>
 <body>
     <header class="header">
-        <div class="container">
+        <div class="header-content">
             <h1><img src="images/logomyapp.png" alt="LOG Minyak Logo" width="70" height="70"> LOG Minyak</h1>
         </div>
     </header>
@@ -168,7 +179,7 @@
 
         <div class="iframe-container">
             <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSdD9wYAZAB4KyJZgBhv5XHixTC-w8D_pc8CLt_01BIKMKNp6w/viewform?embedded=true"     
-                height="970" 
+                height="600" 
                 frameborder="0" 
                 marginheight="0" 
                 marginwidth="0">
@@ -179,7 +190,6 @@
         <div class="qr-container"> 
             <img src="images/qr.png" alt="QR Code" width="170" height="170">
         </div>
-    </main>
     
     <script>
         // Service worker registration
