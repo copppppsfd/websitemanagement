@@ -116,6 +116,29 @@
       if (typeof navigator.serviceWorker !== 'undefined') {
         navigator.serviceWorker.register('sw.js')
       }
+
+      function scalePageToFit() {
+          const container = document.getElementById('page-container');
+          if (!container) return;
+        
+          const screenWidth = window.innerWidth;
+          const padding = 40; // px or whatever you want to leave as margin
+          const availableWidth = screenWidth - padding;
+        
+          const pageWidthInInches = 8.5;
+          const dpi = 96; // standard CSS DPI
+          const pageWidthPx = pageWidthInInches * dpi;
+        
+          let scale = availableWidth / pageWidthPx;
+        
+          // Cap the scale at 1 to avoid enlarging on huge screens
+          scale = Math.min(scale, 1);
+        
+          container.style.transform = `scale(${scale})`;
+        }
+        
+        window.addEventListener('resize', scalePageToFit);
+        window.addEventListener('load', scalePageToFit);  
     </script>
 </body>
 </html>
