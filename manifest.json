@@ -1,9 +1,9 @@
 {
   "name": "Log minyak",
-  "theme_color": "#000000",
-  "background_color": "#000000",
+  "theme_color": "#b2ffff",
+  "background_color": "#ffffff",
   "short_name": "log",
-  "id": "logd",
+  "id": "logminyak1",
   "description": "logging minyak",
   "start_url": "https://copppppsfd.github.io/websitemanagement/",
   "icons": [
@@ -456,8 +456,7 @@
       "sizes": "1024x1024"
     }
   ],
-  "display": "minimal-ui",
-  "orientation": "any",
+  "display": "fullscreen",
+  "orientation": "portrait",
   "dir": "auto"
-  
 }
