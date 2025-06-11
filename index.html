@@ -20,11 +20,6 @@
             line-height: 1.6;
             color: #333;
         }
-
-        .downloaddiv {
-            width:25%;
-            float:left;
-        }  
         
         .container {
             width: 100%;
@@ -115,22 +110,50 @@
         }
         
         .qr-container {
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
             margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .qr-section, .download-section {
+            text-align: center;
+            flex: 1;
+            max-width: 300px;
+        }
+
+        .qr-section p, .download-section p {
+            margin-bottom: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .qr-section img {
+            max-width: 100%;
+            height: auto;
         }
 
         .btn {
-          background-color: DodgerBlue;
-          border: none;
-          color: white;
-          padding: 12px 30px;
-          cursor: pointer;
-          font-size: 20px;
+            background-color: DodgerBlue;
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-size: 18px;
+            border-radius: 6px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
         }
         
         /* Darker background on mouse-over */
         .btn:hover {
-          background-color: RoyalBlue;
+            background-color: RoyalBlue;
         }
 
         @media (max-width: 768px) {
@@ -149,6 +172,21 @@
             
             iframe#mySheet {
                 height: 400px;
+            }
+
+            .qr-container {
+                flex-direction: column;
+                gap: 30px;
+                align-items: center;
+            }
+
+            .qr-section, .download-section {
+                max-width: 100%;
+            }
+
+            .qr-section img {
+                width: 180px;
+                height: 180px;
             }
         }
         
@@ -170,9 +208,19 @@
                 gap: 10px;
             }
             
-            .qr-container img {
+            .qr-container {
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .qr-section img {
                 width: 150px;
                 height: 150px;
+            }
+
+            .btn {
+                font-size: 16px;
+                padding: 10px 25px;
             }
         }
     </style>
@@ -207,16 +255,19 @@
         </div>
 
         <div class="qr-container"> 
-            <div class="downloaddiv">
-                <p>QR code untuk website.</p>
+            <div class="qr-section">
+                <p>QR code untuk website</p>
                 <img src="images/dq.png" alt="QR Code" width="200" height="200">
+            </div>
             
-                <p>Download aplikasi untuk HP.</p>
-                <a href="log minyak.apk" download="log minyak">
-                    <button class="btn"><i class="fa fa-download"></i> Download</button>
+            <div class="download-section">
+                <p>Download aplikasi untuk HP</p>
+                <a href="log minyak.apk" download="log minyak" class="btn">
+                    <i class="fa fa-download"></i> Download
                 </a>
             </div>
         </div>
+    </main>
     
     <script>
         // Service worker registration
