@@ -39,7 +39,7 @@
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* Aligns content to the left */
+            justify-content: flex-start;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -84,6 +84,13 @@
             padding: 10px;
             background-color: #f0f8ff;
             border-radius: 5px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .scroll-controls {
+            display: flex;
+            gap: 5px;
         }
         
         .form-controls a {
@@ -103,10 +110,36 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 14px;
         }
         
         button:hover {
             background-color: #007acc;
+        }
+        
+        button:active {
+            background-color: #005999;
+        }
+        
+        .scroll-btn {
+            background-color: #28a745;
+            user-select: none;
+        }
+        
+        .scroll-btn:hover {
+            background-color: #218838;
+        }
+        
+        .scroll-btn:active {
+            background-color: #1e7e34;
+        }
+        
+        .stop-btn {
+            background-color: #dc3545;
+        }
+        
+        .stop-btn:hover {
+            background-color: #c82333;
         }
         
         .qr-container {
@@ -116,7 +149,6 @@
             gap: 40px;
             margin-top: 20px;
             padding: 20px;
-            
         }
 
         .qr-section, .download-section {
@@ -149,7 +181,6 @@
             display: inline-block;
         }
         
-        /* Darker background on mouse-over */
         .btn:hover {
             background-color: RoyalBlue;
         }
@@ -186,6 +217,15 @@
                 width: 180px;
                 height: 180px;
             }
+            
+            .form-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .scroll-controls {
+                justify-content: center;
+            }
         }
         
         @media (max-width: 480px) {
@@ -201,11 +241,6 @@
                 margin-right: 10px;
             }
             
-            .form-controls {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
             .qr-container {
                 padding: 15px;
                 gap: 20px;
@@ -219,6 +254,11 @@
             .btn {
                 font-size: 16px;
                 padding: 10px 25px;
+            }
+            
+            button {
+                font-size: 12px;
+                padding: 6px 12px;
             }
         }
     </style>
@@ -237,10 +277,12 @@
                     height="500" frameborder="0" allowfullscreen></iframe>
             
             <div class="form-controls">
-                <button id="scrollRightBtn">▶ Hold Right</button>
-                <button id="scrollLeftBtn">◀ Hold Left</button>
-                <button id="stopScrollBtn">⏹ Stop</button>
-
+                <div class="scroll-controls">
+                    <button id="scrollLeftBtn" class="scroll-btn">◀ Left</button>
+                    <button id="stopScrollBtn" class="stop-btn">⏹ Stop</button>
+                    <button id="scrollRightBtn" class="scroll-btn">Right ▶</button>
+                </div>
+                
                 <a href="https://docs.google.com/spreadsheets/d/1sPnJP3-5k76AeAp2Os4e6VUEaScwBukFhWt_W4wAfyM/edit?usp=sharing" target="_blank">Klik link jika mau mengedit</a>
                 <button onclick="refreshIframe()">Refresh</button>
             </div>
@@ -283,7 +325,7 @@
         // Refresh iframe function
         function refreshIframe() {
             const iframe = document.getElementById('mySheet');
-            iframe.src = iframe.src; // reload the iframe
+            iframe.src = iframe.src;
         }
         
         // Adjust iframe heights based on content and viewport
@@ -291,7 +333,6 @@
             const viewportHeight = window.innerHeight;
             const formIframe = document.querySelector('.iframe-container:nth-child(2) iframe');
             
-            // Set the form iframe to a reasonable height based on viewport
             if (viewportHeight < 700) {
                 formIframe.style.height = '1150px';
             } else if (viewportHeight < 900) {
@@ -308,46 +349,163 @@
         var loaded = function() {
             loadCounter += 1;
             if (loadCounter === 2) {
-                $("iframe").attr("height", "500px");
-                $(window).scrollTo(315,0)
+                const iframes = document.querySelectorAll("iframe");
+                iframes.forEach(iframe => {
+                    if (iframe.id !== 'mySheet') {
+                        iframe.style.height = "500px";
+                    }
+                });
             }
         }
         
-        function setupScrollButtons(scrollContainer) {
-          let intervalId = null;
+        // Sheet scrolling functionality
+        let scrollInterval = null;
+        let isScrolling = false;
         
-          function startScroll(dir = 1) {
-            stopScroll(); // clear any existing scroll
-            intervalId = setInterval(() => {
-              scrollContainer.scrollLeft += dir * 2; // speed
-            }, 10);
-          }
-        
-          function stopScroll() {
-            if (intervalId) {
-              clearInterval(intervalId);
-              intervalId = null;
+        function startScroll(direction) {
+            if (isScrolling) stopScroll();
+            
+            isScrolling = true;
+            const iframe = document.getElementById('mySheet');
+            
+            // Try to access iframe content (this might be limited due to CORS)
+            try {
+                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                const scrollableElement = iframeDocument.querySelector('.grid-container') || 
+                                        iframeDocument.querySelector('.waffle') || 
+                                        iframeDocument.documentElement;
+                
+                if (scrollableElement) {
+                    scrollInterval = setInterval(() => {
+                        scrollableElement.scrollLeft += direction * 3;
+                    }, 20);
+                } else {
+                    // Fallback: send key events to iframe
+                    iframe.contentWindow.focus();
+                    scrollInterval = setInterval(() => {
+                        const keyEvent = new KeyboardEvent('keydown', {
+                            key: direction > 0 ? 'ArrowRight' : 'ArrowLeft',
+                            bubbles: true
+                        });
+                        iframe.contentWindow.document.dispatchEvent(keyEvent);
+                    }, 100);
+                }
+            } catch (e) {
+                // CORS blocked - try alternative approach
+                console.log('Direct access blocked, using alternative method');
+                iframe.contentWindow.focus();
+                scrollInterval = setInterval(() => {
+                    // Try to send messages to iframe
+                    const message = {
+                        type: 'scroll',
+                        direction: direction > 0 ? 'right' : 'left'
+                    };
+                    iframe.contentWindow.postMessage(message, '*');
+                }, 50);
             }
-          }
-        
-          // Button listeners
-          document.getElementById('scrollRightBtn').addEventListener('mousedown', () => startScroll(1));
-          document.getElementById('scrollLeftBtn').addEventListener('mousedown', () => startScroll(-1));
-          document.getElementById('stopScrollBtn').addEventListener('click', stopScroll);
-          document.addEventListener('mouseup', stopScroll); // stop on release
         }
         
-        // Use MutationObserver to wait for switcherContent to appear
-        const observer = new MutationObserver((mutations, obs) => {
-          const el = document.querySelector('.switcherContent');
-          if (el) {
-            setupScrollButtons(el);
-            obs.disconnect(); // stop watching
-          }
+        function stopScroll() {
+            if (scrollInterval) {
+                clearInterval(scrollInterval);
+                scrollInterval = null;
+            }
+            isScrolling = false;
+        }
+        
+        // Enhanced button event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            const leftBtn = document.getElementById('scrollLeftBtn');
+            const rightBtn = document.getElementById('scrollRightBtn');
+            const stopBtn = document.getElementById('stopScrollBtn');
+            
+            // Mouse events for desktop
+            leftBtn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startScroll(-1);
+            });
+            
+            rightBtn.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                startScroll(1);
+            });
+            
+            stopBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                stopScroll();
+            });
+            
+            // Touch events for mobile
+            leftBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startScroll(-1);
+            }, { passive: false });
+            
+            rightBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startScroll(1);
+            }, { passive: false });
+            
+            // Stop scrolling on mouse up or touch end
+            document.addEventListener('mouseup', stopScroll);
+            document.addEventListener('touchend', stopScroll);
+            
+            // Also stop when mouse leaves the window
+            document.addEventListener('mouseleave', stopScroll);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+                
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        if (!isScrolling) startScroll(-1);
+                        e.preventDefault();
+                        break;
+                    case 'ArrowRight':
+                        if (!isScrolling) startScroll(1);
+                        e.preventDefault();
+                        break;
+                    case ' ':
+                    case 'Escape':
+                        stopScroll();
+                        e.preventDefault();
+                        break;
+                }
+            });
+            
+            document.addEventListener('keyup', function(e) {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    stopScroll();
+                }
+            });
         });
         
-        // Start observing
-        observer.observe(document.body, { childList: true, subtree: true }
+        // Handle iframe load to set up communication
+        document.getElementById('mySheet').addEventListener('load', function() {
+            setTimeout(() => {
+                // Try to inject scroll helper into iframe
+                try {
+                    const iframe = document.getElementById('mySheet');
+                    const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    
+                    // Add message listener to iframe
+                    iframe.contentWindow.addEventListener('message', function(event) {
+                        if (event.data.type === 'scroll') {
+                            const scrollable = iframeDoc.querySelector('.grid-container') || 
+                                             iframeDoc.querySelector('.waffle') || 
+                                             iframeDoc.documentElement;
+                            if (scrollable) {
+                                const direction = event.data.direction === 'right' ? 1 : -1;
+                                scrollable.scrollLeft += direction * 3;
+                            }
+                        }
+                    });
+                } catch (e) {
+                    console.log('Could not access iframe content due to CORS policy');
+                }
+            }, 1000);
+        });
     </script>
 </body>
 </html>
