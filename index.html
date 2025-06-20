@@ -237,8 +237,10 @@
                     height="500" frameborder="0" allowfullscreen></iframe>
             
             <div class="form-controls">
-                <button id="scrollRightBtn">▶ Scroll Right</button>
-                <button id="scrollLeftBtn">◀ Scroll Left</button>
+                <button id="scrollRightBtn">▶ Hold Right</button>
+                <button id="scrollLeftBtn">◀ Hold Left</button>
+                <button id="stopScrollBtn">⏹ Stop</button>
+
                 <a href="https://docs.google.com/spreadsheets/d/1sPnJP3-5k76AeAp2Os4e6VUEaScwBukFhWt_W4wAfyM/edit?usp=sharing" target="_blank">Klik link jika mau mengedit</a>
                 <button onclick="refreshIframe()">Refresh</button>
             </div>
@@ -310,38 +312,33 @@
                 $(window).scrollTo(315,0)
             }
         }
-
+        
         document.addEventListener('DOMContentLoaded', () => {
-          const rightBtn = document.getElementById("scrollRightBtn");
-          const leftBtn = document.getElementById("scrollLeftBtn");
+          const scrollContainer = document.querySelector('.switcherContent'); // confirm this exists
+          let intervalId = null;
         
-          const arrows = document.querySelectorAll('.switcherArrow');
+          const startScroll = (direction = 1) => {
+            stopScroll(); // clear existing one
+            intervalId = setInterval(() => {
+              if (scrollContainer) {
+                scrollContainer.scrollLeft += direction * 2; // scroll speed
+              }
+            }, 10);
+          };
         
-          if (arrows.length < 2) {
-            console.warn("Not enough .switcherArrow elements found.");
-            return;
-          }
+          const stopScroll = () => {
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = null;
+            }
+          };
         
-          const rightArrow = arrows[0]; // usually right
-          const leftArrow = arrows[1];  // usually left
+          document.getElementById('scrollRightBtn').addEventListener('mousedown', () => startScroll(1));
+          document.getElementById('scrollLeftBtn').addEventListener('mousedown', () => startScroll(-1));
+          document.getElementById('stopScrollBtn').addEventListener('click', stopScroll);
         
-          rightBtn.addEventListener("click", () => {
-            const evt = new MouseEvent("mouseover", {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            });
-            rightArrow.dispatchEvent(evt);
-          });
-        
-          leftBtn.addEventListener("click", () => {
-            const evt = new MouseEvent("mouseover", {
-              bubbles: true,
-              cancelable: true,
-              view: window
-            });
-            leftArrow.dispatchEvent(evt);
-          });
+          // Optional: stop on mouseup anywhere
+          document.addEventListener('mouseup', stopScroll);
         });
     </script>
 </body>
