@@ -39,7 +39,7 @@
         .header-content {
             display: flex;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: flex-start; /* Aligns content to the left */
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -84,13 +84,6 @@
             padding: 10px;
             background-color: #f0f8ff;
             border-radius: 5px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .scroll-controls {
-            display: flex;
-            gap: 5px;
         }
         
         .form-controls a {
@@ -110,15 +103,10 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
         }
         
         button:hover {
             background-color: #007acc;
-        }
-        
-        button:active {
-            background-color: #005999;
         }
         
         .qr-container {
@@ -128,6 +116,7 @@
             gap: 40px;
             margin-top: 20px;
             padding: 20px;
+            
         }
 
         .qr-section, .download-section {
@@ -160,6 +149,7 @@
             display: inline-block;
         }
         
+        /* Darker background on mouse-over */
         .btn:hover {
             background-color: RoyalBlue;
         }
@@ -196,15 +186,6 @@
                 width: 180px;
                 height: 180px;
             }
-            
-            .form-controls {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .scroll-controls {
-                justify-content: center;
-            }
         }
         
         @media (max-width: 480px) {
@@ -220,6 +201,11 @@
                 margin-right: 10px;
             }
             
+            .form-controls {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
             .qr-container {
                 padding: 15px;
                 gap: 20px;
@@ -233,11 +219,6 @@
             .btn {
                 font-size: 16px;
                 padding: 10px 25px;
-            }
-            
-            button {
-                font-size: 12px;
-                padding: 6px 12px;
             }
         }
     </style>
@@ -299,7 +280,7 @@
         // Refresh iframe function
         function refreshIframe() {
             const iframe = document.getElementById('mySheet');
-            iframe.src = iframe.src;
+            iframe.src = iframe.src; // reload the iframe
         }
         
         // Adjust iframe heights based on content and viewport
@@ -307,6 +288,7 @@
             const viewportHeight = window.innerHeight;
             const formIframe = document.querySelector('.iframe-container:nth-child(2) iframe');
             
+            // Set the form iframe to a reasonable height based on viewport
             if (viewportHeight < 700) {
                 formIframe.style.height = '1150px';
             } else if (viewportHeight < 900) {
@@ -323,13 +305,10 @@
         var loaded = function() {
             loadCounter += 1;
             if (loadCounter === 2) {
-                const iframes = document.querySelectorAll("iframe");
-                iframes.forEach(iframe => {
-                    if (iframe.id !== 'mySheet') {
-                        iframe.style.height = "500px";
-                    }
-                });
-            
+                $("iframe").attr("height", "500px");
+                $(window).scrollTo(315,0)
+            }
+        }
         
     </script>
 </body>
