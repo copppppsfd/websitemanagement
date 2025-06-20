@@ -313,33 +313,31 @@
             }
         }
         
-        document.addEventListener('DOMContentLoaded', () => {
-          const scrollContainer = document.querySelector('.switcherContent'); // confirm this exists
+        const waitForSwitcher = setInterval(() => {
+          const el = document.querySelector('.switcherContent');
+          if (el) {
+            clearInterval(waitForSwitcher);
+            setupScrollButtons(el); // now you can safely attach your code
+          }
+        }, 100);
+        
+        function setupScrollButtons(scrollContainer) {
           let intervalId = null;
         
-          const startScroll = (direction = 1) => {
-            stopScroll(); // clear existing one
+          const startScroll = (dir = 1) => {
+            clearInterval(intervalId);
             intervalId = setInterval(() => {
-              if (scrollContainer) {
-                scrollContainer.scrollLeft += direction * 2; // scroll speed
-              }
+              scrollContainer.scrollLeft += dir * 2;
             }, 10);
           };
         
-          const stopScroll = () => {
-            if (intervalId) {
-              clearInterval(intervalId);
-              intervalId = null;
-            }
-          };
+          const stopScroll = () => clearInterval(intervalId);
         
           document.getElementById('scrollRightBtn').addEventListener('mousedown', () => startScroll(1));
           document.getElementById('scrollLeftBtn').addEventListener('mousedown', () => startScroll(-1));
           document.getElementById('stopScrollBtn').addEventListener('click', stopScroll);
-        
-          // Optional: stop on mouseup anywhere
           document.addEventListener('mouseup', stopScroll);
-        });
+        }
     </script>
 </body>
 </html>
