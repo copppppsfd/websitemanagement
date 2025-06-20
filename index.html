@@ -272,43 +272,7 @@
     </main>
     
     <script>
-        // Service worker registration
-        if (typeof navigator.serviceWorker !== 'undefined') {
-            navigator.serviceWorker.register('sw.js');
-        }
-
-        // Refresh iframe function
-        function refreshIframe() {
-            const iframe = document.getElementById('mySheet');
-            iframe.src = iframe.src; // reload the iframe
-        }
-        
-        // Adjust iframe heights based on content and viewport
-        function adjustIframeHeights() {
-            const viewportHeight = window.innerHeight;
-            const formIframe = document.querySelector('.iframe-container:nth-child(2) iframe');
-            
-            // Set the form iframe to a reasonable height based on viewport
-            if (viewportHeight < 700) {
-                formIframe.style.height = '1150px';
-            } else if (viewportHeight < 900) {
-                formIframe.style.height = '1150px';
-            } else {
-                formIframe.style.height = '950px';
-            }
-        }
-        
-        window.addEventListener('load', adjustIframeHeights);
-        window.addEventListener('resize', adjustIframeHeights);
-
-        var loadCounter = 0;
-        var loaded = function() {
-            loadCounter += 1;
-            if (loadCounter === 2) {
-                $("iframe").attr("height", "500px");
-                $(window).scrollTo(315,0)
-            }
-        }
+        function refreshIframe(){const e=document.getElementById("mySheet");e.src=e.src}function adjustIframeHeights(){var e=window.innerHeight;const r=document.querySelector(".iframe-container:nth-child(2) iframe");r.style.height=e<700||e<900?"1150px":"950px"}void 0!==navigator.serviceWorker&&navigator.serviceWorker.register("sw.js"),window.addEventListener("load",adjustIframeHeights),window.addEventListener("resize",adjustIframeHeights);var loadCounter=0,loaded=function(){2===(loadCounter+=1)&&($("iframe").attr("height","500px"),$(window).scrollTo(315,0))};
         
     </script>
 </body>
