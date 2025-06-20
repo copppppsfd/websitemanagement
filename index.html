@@ -313,31 +313,41 @@
             }
         }
         
-        const waitForSwitcher = setInterval(() => {
-          const el = document.querySelector('.switcherContent');
-          if (el) {
-            clearInterval(waitForSwitcher);
-            setupScrollButtons(el); // now you can safely attach your code
-          }
-        }, 100);
-        
         function setupScrollButtons(scrollContainer) {
           let intervalId = null;
         
-          const startScroll = (dir = 1) => {
-            clearInterval(intervalId);
+          function startScroll(dir = 1) {
+            stopScroll(); // clear any existing scroll
             intervalId = setInterval(() => {
-              scrollContainer.scrollLeft += dir * 2;
+              scrollContainer.scrollLeft += dir * 2; // speed
             }, 10);
-          };
+          }
         
-          const stopScroll = () => clearInterval(intervalId);
+          function stopScroll() {
+            if (intervalId) {
+              clearInterval(intervalId);
+              intervalId = null;
+            }
+          }
         
+          // Button listeners
           document.getElementById('scrollRightBtn').addEventListener('mousedown', () => startScroll(1));
           document.getElementById('scrollLeftBtn').addEventListener('mousedown', () => startScroll(-1));
           document.getElementById('stopScrollBtn').addEventListener('click', stopScroll);
-          document.addEventListener('mouseup', stopScroll);
+          document.addEventListener('mouseup', stopScroll); // stop on release
         }
+        
+        // Use MutationObserver to wait for switcherContent to appear
+        const observer = new MutationObserver((mutations, obs) => {
+          const el = document.querySelector('.switcherContent');
+          if (el) {
+            setupScrollButtons(el);
+            obs.disconnect(); // stop watching
+          }
+        });
+        
+        // Start observing
+        observer.observe(document.body, { childList: true, subtree: true }
     </script>
 </body>
 </html>
