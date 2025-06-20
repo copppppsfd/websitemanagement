@@ -237,6 +237,8 @@
                     height="500" frameborder="0" allowfullscreen></iframe>
             
             <div class="form-controls">
+                  <button id="myBtn">Click Me</button>
+
                 <a href="https://docs.google.com/spreadsheets/d/1sPnJP3-5k76AeAp2Os4e6VUEaScwBukFhWt_W4wAfyM/edit?usp=sharing" target="_blank">Klik link jika mau mengedit</a>
                 <button onclick="refreshIframe()">Refresh</button>
             </div>
@@ -308,6 +310,45 @@
                 $(window).scrollTo(315,0)
             }
         }
+
+        // Simulate Closure-style event system
+        const listeners = [];
+    
+        // This is similar to the `pa` object in your code
+        function createListener(src, type, listenerFn) {
+          const a = {
+            src: src,
+            listener: listenerFn,
+            type: type
+          };
+          listeners.push(a);
+          return a;
+        }
+    
+        // This mimics the core: return b.call(a.src, a.listener, c)
+        function triggerManually(listenerObj, eventObj) {
+          return listenerObj.listener.call(listenerObj.src, eventObj);
+        }
+    
+        // Setup: create a button listener
+        const btn = document.getElementById('myBtn');
+    
+        const myListener = createListener(btn, 'click', function (e) {
+          console.log("Manual or real click:", e.type);
+          btn.textContent = "Clicked!";
+        });
+    
+        // Attach real listener using addEventListener
+        btn.addEventListener('click', function (e) {
+          triggerManually(myListener, e); // manual trigger path
+        });
+    
+        // Optional: manually trigger listener after 3 seconds
+        setTimeout(() => {
+          console.log("Manually triggering click listener...");
+          const fakeEvent = new Event('click');
+          triggerManually(myListener, fakeEvent);
+        }, 3000);
     </script>
 </body>
 </html>
