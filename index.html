@@ -311,33 +311,38 @@
             }
         }
 
-        const rightBtn = document.getElementById("scrollRightBtn");
-        const leftBtn = document.getElementById("scrollLeftBtn");
-        const targetArrow = document.querySelector('.switcherArrow');
+        document.addEventListener('DOMContentLoaded', () => {
+          const rightBtn = document.getElementById("scrollRightBtn");
+          const leftBtn = document.getElementById("scrollLeftBtn");
         
-          // Trigger one scroll tick by simulating the mouseover event
+          const arrows = document.querySelectorAll('.switcherArrow');
+        
+          if (arrows.length < 2) {
+            console.warn("Not enough .switcherArrow elements found.");
+            return;
+          }
+        
+          const rightArrow = arrows[0]; // usually right
+          const leftArrow = arrows[1];  // usually left
+        
           rightBtn.addEventListener("click", () => {
             const evt = new MouseEvent("mouseover", {
               bubbles: true,
               cancelable: true,
               view: window
             });
-            targetArrow.dispatchEvent(evt);
+            rightArrow.dispatchEvent(evt);
           });
         
           leftBtn.addEventListener("click", () => {
-            // Simulate mouseover on the left arrow instead
-            const arrows = document.querySelectorAll('.switcherArrow');
-            if (arrows.length >= 2) {
-              const leftArrow = arrows[1]; // assuming 1st is right, 2nd is left
-              const evt = new MouseEvent("mouseover", {
-                bubbles: true,
-                cancelable: true,
-                view: window
-              });
-              leftArrow.dispatchEvent(evt);
-            }
+            const evt = new MouseEvent("mouseover", {
+              bubbles: true,
+              cancelable: true,
+              view: window
+            });
+            leftArrow.dispatchEvent(evt);
           });
+        });
     </script>
 </body>
 </html>
