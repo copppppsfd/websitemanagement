@@ -278,9 +278,13 @@
             
             <div class="form-controls">
                 <div class="scroll-controls">
-                    <button id="scrollLeftBtn" class="scroll-btn">◀ Left</button>
+                    <button id="scrollLeftBtn" class="scroll-btn">◀ Hold to Scroll Left</button>
                     <button id="stopScrollBtn" class="stop-btn">⏹ Stop</button>
-                    <button id="scrollRightBtn" class="scroll-btn">Right ▶</button>
+                    <button id="scrollRightBtn" class="scroll-btn">Hold to Scroll Right ▶</button>
+                </div>
+                
+                <div style="font-size: 12px; color: #666; margin: 5px 0;">
+                    💡 Tip: Click inside the spreadsheet first, then use scroll buttons or arrow keys
                 </div>
                 
                 <a href="https://docs.google.com/spreadsheets/d/1sPnJP3-5k76AeAp2Os4e6VUEaScwBukFhWt_W4wAfyM/edit?usp=sharing" target="_blank">Klik link jika mau mengedit</a>
@@ -368,41 +372,55 @@
             isScrolling = true;
             const iframe = document.getElementById('mySheet');
             
-            // Try to access iframe content (this might be limited due to CORS)
-            try {
-                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-                const scrollableElement = iframeDocument.querySelector('.grid-container') || 
-                                        iframeDocument.querySelector('.waffle') || 
-                                        iframeDocument.documentElement;
-                
-                if (scrollableElement) {
-                    scrollInterval = setInterval(() => {
-                        scrollableElement.scrollLeft += direction * 3;
-                    }, 20);
-                } else {
-                    // Fallback: send key events to iframe
-                    iframe.contentWindow.focus();
-                    scrollInterval = setInterval(() => {
-                        const keyEvent = new KeyboardEvent('keydown', {
-                            key: direction > 0 ? 'ArrowRight' : 'ArrowLeft',
-                            bubbles: true
-                        });
-                        iframe.contentWindow.document.dispatchEvent(keyEvent);
-                    }, 100);
+            // Focus the iframe first
+            iframe.contentWindow.focus();
+            
+            // Use keyboard simulation as primary method since CORS blocks direct access
+            scrollInterval = setInterval(() => {
+                try {
+                    // Create and dispatch keyboard events
+                    const keyCode = direction > 0 ? 39 : 37; // Right: 39, Left: 37
+                    const keyName = direction > 0 ? 'ArrowRight' : 'ArrowLeft';
+                    
+                    // Try multiple event dispatch methods
+                    const events = [
+                        new KeyboardEvent('keydown', {
+                            key: keyName,
+                            keyCode: keyCode,
+                            which: keyCode,
+                            bubbles: true,
+                            cancelable: true
+                        }),
+                        new KeyboardEvent('keypress', {
+                            key: keyName,
+                            keyCode: keyCode,
+                            which: keyCode,
+                            bubbles: true,
+                            cancelable: true
+                        })
+                    ];
+                    
+                    // Dispatch to iframe's window and document
+                    events.forEach(event => {
+                        try {
+                            iframe.contentWindow.dispatchEvent(event);
+                            iframe.contentDocument.dispatchEvent(event);
+                        } catch (e) {
+                            // Continue if one method fails
+                        }
+                    });
+                    
+                    // Alternative: simulate user interaction
+                    iframe.contentWindow.postMessage({
+                        type: 'keydown',
+                        key: keyName,
+                        keyCode: keyCode
+                    }, '*');
+                    
+                } catch (e) {
+                    console.log('Keyboard simulation failed:', e);
                 }
-            } catch (e) {
-                // CORS blocked - try alternative approach
-                console.log('Direct access blocked, using alternative method');
-                iframe.contentWindow.focus();
-                scrollInterval = setInterval(() => {
-                    // Try to send messages to iframe
-                    const message = {
-                        type: 'scroll',
-                        direction: direction > 0 ? 'right' : 'left'
-                    };
-                    iframe.contentWindow.postMessage(message, '*');
-                }, 50);
-            }
+            }, 150); // Slower interval for better compatibility
         }
         
         function stopScroll() {
@@ -483,28 +501,38 @@
         
         // Handle iframe load to set up communication
         document.getElementById('mySheet').addEventListener('load', function() {
+            console.log('Google Sheets iframe loaded');
+            
             setTimeout(() => {
-                // Try to inject scroll helper into iframe
+                // Add click handler to focus iframe for better keyboard control
+                const iframe = document.getElementById('mySheet');
+                iframe.addEventListener('click', function() {
+                    iframe.contentWindow.focus();
+                });
+                
+                // Try to inject helper script (will likely fail due to CORS)
                 try {
-                    const iframe = document.getElementById('mySheet');
                     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-                    
-                    // Add message listener to iframe
-                    iframe.contentWindow.addEventListener('message', function(event) {
-                        if (event.data.type === 'scroll') {
-                            const scrollable = iframeDoc.querySelector('.grid-container') || 
-                                             iframeDoc.querySelector('.waffle') || 
-                                             iframeDoc.documentElement;
-                            if (scrollable) {
-                                const direction = event.data.direction === 'right' ? 1 : -1;
-                                scrollable.scrollLeft += direction * 3;
+                    const script = iframeDoc.createElement('script');
+                    script.textContent = `
+                        window.addEventListener('message', function(event) {
+                            if (event.data.type === 'keydown') {
+                                const evt = new KeyboardEvent('keydown', {
+                                    key: event.data.key,
+                                    keyCode: event.data.keyCode,
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+                                document.dispatchEvent(evt);
                             }
-                        }
-                    });
+                        });
+                    `;
+                    iframeDoc.head.appendChild(script);
+                    console.log('Helper script injected successfully');
                 } catch (e) {
-                    console.log('Could not access iframe content due to CORS policy');
+                    console.log('Script injection blocked by CORS - this is normal for Google Sheets');
                 }
-            }, 1000);
+            }, 2000);
         });
     </script>
 </body>
