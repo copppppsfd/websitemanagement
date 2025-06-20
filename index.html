@@ -283,10 +283,6 @@
                     <button id="scrollRightBtn" class="scroll-btn">Hold to Scroll Right ▶</button>
                 </div>
                 
-                <div style="font-size: 12px; color: #666; margin: 5px 0;">
-                    💡 Using Google Sheets native tab switcher arrows for smooth navigation
-                </div>
-                
                 <a href="https://docs.google.com/spreadsheets/d/1sPnJP3-5k76AeAp2Os4e6VUEaScwBukFhWt_W4wAfyM/edit?usp=sharing" target="_blank">Klik link jika mau mengedit</a>
                 <button onclick="refreshIframe()">Refresh</button>
             </div>
@@ -387,16 +383,19 @@
                     if (arrows.length >= 2) {
                         // Usually: [0] = left arrow, [1] = right arrow
                         targetArrow = direction > 0 ? arrows[1] : arrows[0];
+                    } else if (arrows.length === 1) {
+                        // Sometimes there's only one arrow visible
+                        targetArrow = arrows[0];
                     } else {
-                        // Fallback: look for arrows by direction class or position
-                        const rightArrow = iframeDoc.querySelector('.switcherArrow[aria-label*="right"], .switcherArrow:last-of-type');
-                        const leftArrow = iframeDoc.querySelector('.switcherArrow[aria-label*="left"], .switcherArrow:first-of-type');
+                        // Fallback: look for arrows by other selectors
+                        const rightArrow = iframeDoc.querySelector('.switcherArrow[data-direction="1"], .switcherArrow:last-of-type');
+                        const leftArrow = iframeDoc.querySelector('.switcherArrow[data-direction="-1"], .switcherArrow:first-of-type');
                         targetArrow = direction > 0 ? rightArrow : leftArrow;
                     }
                     
                     if (targetArrow) {
-                        // Simulate mouse events on the switcher arrow
-                        ['mousedown', 'mouseup', 'click'].forEach(eventType => {
+                        // Use the exact sequence that works in console
+                        ['mousedown', 'mouseout', 'mouseover'].forEach(eventType => {
                             const evt = new MouseEvent(eventType, {
                                 bubbles: true,
                                 cancelable: true,
@@ -404,48 +403,67 @@
                             });
                             targetArrow.dispatchEvent(evt);
                         });
-                        console.log(`Triggered ${direction > 0 ? 'right' : 'left'} arrow click`);
+                        console.log(`Triggered ${direction > 0 ? 'right' : 'left'} switcher arrow`);
                     } else {
-                        console.log('Switcher arrows not found, trying alternative method');
-                        // Fallback to keyboard simulation
-                        simulateKeyboardScroll(direction, iframe);
+                        console.log('Switcher arrows not found, trying script injection');
+                        // Try to inject and execute the working code directly
+                        injectScrollScript(direction, iframe);
                     }
                     
                 } catch (e) {
-                    console.log('Direct switcher access blocked, using fallback method');
-                    // Fallback to keyboard simulation
-                    simulateKeyboardScroll(direction, iframe);
+                    console.log('Direct switcher access blocked, trying script injection');
+                    injectScrollScript(direction, iframe);
                 }
-            }, 200); // Slightly slower for tab switching
+            }, 300); // Slower for better reliability
         }
         
-        function simulateKeyboardScroll(direction, iframe) {
+        function injectScrollScript(direction, iframe) {
             try {
-                const keyCode = direction > 0 ? 39 : 37; // Right: 39, Left: 37
-                const keyName = direction > 0 ? 'ArrowRight' : 'ArrowLeft';
-                
-                const keyEvent = new KeyboardEvent('keydown', {
-                    key: keyName,
-                    keyCode: keyCode,
-                    which: keyCode,
-                    bubbles: true,
-                    cancelable: true
-                });
-                
-                // Try multiple dispatch targets
-                try {
-                    iframe.contentWindow.dispatchEvent(keyEvent);
-                    iframe.contentDocument.dispatchEvent(keyEvent);
-                } catch (e) {
-                    // Send as message
-                    iframe.contentWindow.postMessage({
-                        type: 'keydown',
-                        key: keyName,
-                        keyCode: keyCode
-                    }, '*');
-                }
+                // Try to inject a script that runs the exact console command
+                const script = iframe.contentDocument.createElement('script');
+                const arrowIndex = direction > 0 ? 1 : 0;
+                script.textContent = `
+                    try {
+                        const arrows = document.querySelectorAll('.switcherArrow');
+                        const targetArrow = arrows[${arrowIndex}] || arrows[0];
+                        if (targetArrow) {
+                            ['mousedown', 'mouseout', 'mouseover'].forEach(eventType => {
+                                const evt = new MouseEvent(eventType, {
+                                    bubbles: true,
+                                    cancelable: true,
+                                    view: window
+                                });
+                                targetArrow.dispatchEvent(evt);
+                            });
+                        }
+                    } catch (e) {
+                        console.log('Injected script failed:', e);
+                    }
+                `;
+                iframe.contentDocument.head.appendChild(script);
+                iframe.contentDocument.head.removeChild(script); // Clean up
+                console.log('Injected scroll script');
             } catch (e) {
-                console.log('Keyboard simulation also failed:', e);
+                console.log('Script injection failed, using postMessage');
+                // Final fallback: send message to iframe
+                iframe.contentWindow.postMessage({
+                    type: 'switcherClick',
+                    direction: direction > 0 ? 'right' : 'left',
+                    code: `
+                        const arrows = document.querySelectorAll('.switcherArrow');
+                        const targetArrow = arrows[${direction > 0 ? 1 : 0}] || arrows[0];
+                        if (targetArrow) {
+                            ['mousedown', 'mouseout', 'mouseover'].forEach(eventType => {
+                                const evt = new MouseEvent(eventType, {
+                                    bubbles: true,
+                                    cancelable: true,
+                                    view: window
+                                });
+                                targetArrow.dispatchEvent(evt);
+                            });
+                        }
+                    `
+                }, '*');
             }
         }
         
@@ -530,35 +548,63 @@
             console.log('Google Sheets iframe loaded');
             
             setTimeout(() => {
-                // Add click handler to focus iframe for better keyboard control
                 const iframe = document.getElementById('mySheet');
+                
+                // Add click handler to focus iframe
                 iframe.addEventListener('click', function() {
                     iframe.contentWindow.focus();
                 });
                 
-                // Try to inject helper script (will likely fail due to CORS)
+                // Try to set up message listener in iframe for the working script
                 try {
                     const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
                     const script = iframeDoc.createElement('script');
                     script.textContent = `
                         window.addEventListener('message', function(event) {
-                            if (event.data.type === 'keydown') {
-                                const evt = new KeyboardEvent('keydown', {
-                                    key: event.data.key,
-                                    keyCode: event.data.keyCode,
-                                    bubbles: true,
-                                    cancelable: true
-                                });
-                                document.dispatchEvent(evt);
+                            if (event.data.type === 'switcherClick' && event.data.code) {
+                                try {
+                                    eval(event.data.code);
+                                } catch (e) {
+                                    console.log('Message handler failed:', e);
+                                }
                             }
                         });
+                        
+                        // Also try to expose a global function
+                        window.triggerSwitcher = function(direction) {
+                            const arrows = document.querySelectorAll('.switcherArrow');
+                            const targetArrow = direction === 'right' ? arrows[1] || arrows[0] : arrows[0];
+                            if (targetArrow) {
+                                ['mousedown', 'mouseout', 'mouseover'].forEach(eventType => {
+                                    const evt = new MouseEvent(eventType, {
+                                        bubbles: true,
+                                        cancelable: true,
+                                        view: window
+                                    });
+                                    targetArrow.dispatchEvent(evt);
+                                });
+                                return true;
+                            }
+                            return false;
+                        };
                     `;
                     iframeDoc.head.appendChild(script);
-                    console.log('Helper script injected successfully');
+                    console.log('Switcher helper script injected successfully');
                 } catch (e) {
-                    console.log('Script injection blocked by CORS - this is normal for Google Sheets');
+                    console.log('Script injection blocked by CORS - trying alternative approach');
+                    
+                    // Try to call the function directly if possible
+                    setTimeout(() => {
+                        try {
+                            if (iframe.contentWindow.triggerSwitcher) {
+                                console.log('Direct function access available');
+                            }
+                        } catch (e) {
+                            console.log('Direct function access blocked');
+                        }
+                    }, 1000);
                 }
-            }, 2000);
+            }, 3000); // Wait longer for Google Sheets to fully load
         });
     </script>
 </body>
